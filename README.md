@@ -18,6 +18,8 @@ At some point, this will be changed to use ANN for search instead.
   to improve performance of the cosine similarity calculations.
 - **Serialization and Deserialization**: The tree can be serialized to and
   deserialized from JSON format.
+- **Complementary Prompting Function:** This library includes an example 
+  function on how to build a search closure.
 
 ## Usage
 
@@ -42,7 +44,36 @@ let search_term = "search query".to_string();
 let min_similarity = 0.8; 
 let max_search_results = 5;
 let search_results = root_node.search(min_similarity, max_search_results, search_term, get_openai_embeddings);
-// you may add your own embeddings closure if you want to add your own type of embeddings
+// you may add your own search closure if you want to add your own type of embeddings
+```
+
+### Example Embedding Closure
+
+```rust
+pub fn get_openai_embeddings(search_term: String) -> Result< Vec<f64>, NodeError> {
+    let chat_request = gpt35!(
+        system!("rewrite the following into a good search query to search the api reference documents: "),
+        user!(search_term)
+        ).get();
+
+    match chat_request {
+        Ok(chat_request) => {
+            let choice = chat_request.default_choice();
+            println!("{}", choice);
+            let embeddings = EmbeddingRequest::new(choice).get();
+            match embeddings {
+                Ok(embeddings) => {
+                    match embeddings.get_embeddings() {
+                        Some(embeddings) => {Ok(embeddings.clone())},
+                        None => {Err(NodeError::from("No search embeddings were found")) }
+                    }
+                },
+                Err(err_msg) => { Err(NodeError { msg: err_msg.message })}
+            }
+        },
+        Err(err_msg) => {Err(NodeError{ msg: err_msg.message})}
+    }
+}
 ```
 
 ### Saving and Loading the Node Structure
