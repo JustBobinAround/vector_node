@@ -88,7 +88,7 @@ let loaded_tree = Node::load_model("search_tree.json".to_string()).unwrap();
 
 - [rayon](https://crates.io/crates/rayon): For parallel processing.
 - [serde](https://crates.io/crates/serde): For serialization and deserialization.
-- [openai_api](https://crates.io/crates/openai_api): For interacting with the OpenAI API.
+- [openai_api](https://github.com/JustBobinAround/openai_api): Library I made for interacting with the OpenAI API.
 
 ## License
 
