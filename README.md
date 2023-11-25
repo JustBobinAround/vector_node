@@ -30,7 +30,6 @@ use vector_node::prelude::*;
 
 let parent_node = Node::new(0, embeddings, url, page);
 
-println!("Embedding Progress: {}/{}", count, db_len);
 if let Ok(mut parent_node) = parent_node.0.lock() {
     parent_node.add_child(embeddings, url, page);
 }
