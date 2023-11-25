@@ -1,7 +1,7 @@
 # Vector Node
 
-The Vector Node is a Rust implementation of a tree data structure designed
-to organize web pages based on their content embeddings. It provides a
+The Vector Node is a Rust implementation of a K-D tree structure designed
+to organize web pages based on their vector embeddings. It provides a
 hierarchical structure where each node represents a web page, and the tree is
 built based on the cosine similarity between content embeddings. The tree is 
 sorted by closer embeddings, which should help find relevant results faster.
@@ -9,12 +9,11 @@ At some point, this will be changed to use ANN for search instead.
 
 ## Features
 
-- **Tree Structure**: Each node in the tree contains information about a web
-  page, including depth, embeddings, URL, and page number.
-- **Binary Tree**: The tree follows a binary structure, with each node having
-  two children (`node_a` and `node_b`). This should improve finding results
-  earlier, but the time complexity is still O(n).
-- **Multithreading**: The code uses the `rayon` crate for parallel processing
+- **K-D Tree Structure**: Each node in the K-D tree contains information about a,
+  including depth, embeddings, URL, and page number. The tree follows a binary structure,
+  with each node having two children (`node_a` and `node_b`). This should improve finding results
+  to an average time of Log(n), but a worst case time complexity of O(n).
+- **Multithreading**: This repo uses the `rayon` crate for parallel processing
   to improve performance of the cosine similarity calculations.
 - **Serialization and Deserialization**: The tree can be serialized to and
   deserialized from JSON format.
