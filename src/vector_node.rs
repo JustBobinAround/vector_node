@@ -140,36 +140,41 @@ impl Node {
     }
 
     pub fn add_child(&mut self, embeddings: Vec<f64>, url: String) {
-        if self.node_a.is_none() {
-            self.node_a_dist = Node::cosine_sim(&self.embeddings, &embeddings);
-            self.node_a = Some(Node::new(self.depth+1, embeddings, url));
-        } else if self.node_b.is_none() {
-            self.node_b_dist = Node::cosine_sim(&self.embeddings, &embeddings);
-            self.node_b = Some(Node::new(self.depth+1, embeddings, url));
+        if self.embeddings.len()==0 {
+            self.embeddings = embeddings;
+            self.url = url;
         } else {
-            let mut a_dist = 0.0;
-            let mut b_dist = 0.0;
-            if let Some(node_a) = &self.node_a {
-                if let Ok(node_a) = node_a.0.lock() {
-                    a_dist = Node::cosine_sim(&node_a.embeddings, &embeddings);
-                }
-            }
-            if let Some(node_b) = &self.node_b {
-                if let Ok(node_b) = node_b.0.lock() {
-                    b_dist = Node::cosine_sim(&node_b.embeddings, &embeddings);
-                }
-            }
-            if a_dist < b_dist {
-                if let Some(node_a) = &self.node_a {
-                    if let Ok(mut node_a) = node_a.0.lock() {
-                        node_a.add_child(embeddings, url);
-                    };
-                }
+            if self.node_a.is_none() {
+                self.node_a_dist = Node::cosine_sim(&self.embeddings, &embeddings);
+                self.node_a = Some(Node::new(self.depth+1, embeddings, url));
+            } else if self.node_b.is_none() {
+                self.node_b_dist = Node::cosine_sim(&self.embeddings, &embeddings);
+                self.node_b = Some(Node::new(self.depth+1, embeddings, url));
             } else {
+                let mut a_dist = 0.0;
+                let mut b_dist = 0.0;
+                if let Some(node_a) = &self.node_a {
+                    if let Ok(node_a) = node_a.0.lock() {
+                        a_dist = Node::cosine_sim(&node_a.embeddings, &embeddings);
+                    }
+                }
                 if let Some(node_b) = &self.node_b {
-                    if let Ok(mut node_b) = node_b.0.lock() {
-                        node_b.add_child(embeddings, url);
-                    };
+                    if let Ok(node_b) = node_b.0.lock() {
+                        b_dist = Node::cosine_sim(&node_b.embeddings, &embeddings);
+                    }
+                }
+                if a_dist < b_dist {
+                    if let Some(node_a) = &self.node_a {
+                        if let Ok(mut node_a) = node_a.0.lock() {
+                            node_a.add_child(embeddings, url);
+                        };
+                    }
+                } else {
+                    if let Some(node_b) = &self.node_b {
+                        if let Ok(mut node_b) = node_b.0.lock() {
+                            node_b.add_child(embeddings, url);
+                        };
+                    }
                 }
             }
         }
