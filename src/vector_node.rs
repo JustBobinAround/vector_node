@@ -139,7 +139,7 @@ impl Node {
         search_results
     }
 
-    pub fn add_child(&mut self, embeddings: Vec<f64>, url: String, page: u32) {
+    pub fn add_child(&mut self, embeddings: Vec<f64>, url: String) {
         if self.node_a.is_none() {
             self.node_a_dist = Node::cosine_sim(&self.embeddings, &embeddings);
             self.node_a = Some(Node::new(self.depth+1, embeddings, url));
@@ -162,13 +162,13 @@ impl Node {
             if a_dist < b_dist {
                 if let Some(node_a) = &self.node_a {
                     if let Ok(mut node_a) = node_a.0.lock() {
-                        node_a.add_child(embeddings, url, page);
+                        node_a.add_child(embeddings, url);
                     };
                 }
             } else {
                 if let Some(node_b) = &self.node_b {
                     if let Ok(mut node_b) = node_b.0.lock() {
-                        node_b.add_child(embeddings, url, page);
+                        node_b.add_child(embeddings, url);
                     };
                 }
             }
