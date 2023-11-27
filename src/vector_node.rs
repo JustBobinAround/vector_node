@@ -66,7 +66,6 @@ pub struct Node {
 
     embeddings: Vec<f64>,
     url: String,
-    page: u32,
 
     #[serde(default, with = "mutexwrapper_serde")]
     node_a: Option<MutexWrapper<Node>>,
@@ -78,12 +77,11 @@ pub struct Node {
 
 impl Node {
 
-    pub fn new(depth: u32, embeddings: Vec<f64>, url: String, page: u32) -> MutexWrapper<Node> {
+    pub fn new(depth: u32, embeddings: Vec<f64>, url: String) -> MutexWrapper<Node> {
         MutexWrapper::new(Node {
             depth,
             embeddings,
             url,
-            page,
             node_a: None,
             node_a_dist: 0.0,
             node_b: None,
@@ -109,12 +107,12 @@ impl Node {
             }
         }
 
-        format!("{}#page={}\n{}node_a:\n{}{}\n{}node_b:\n{}{}", self.url, self.page, space,
+        format!("{}\n{}node_a:\n{}{}\n{}node_b:\n{}{}", self.url, space,
                 space, node_a, space, space, node_b) 
     }
 
     pub fn get_url(&self) -> String {
-        format!("{}#page={}", self.url, self.page)
+        format!("{}", self.url)
     }
 
     pub fn traverse(&self, tally: &mut u32, embeddings: &Vec<f64>, mut search_results: Vec<(f64, String, u32)>, threashold: (usize, f64)) -> Vec<(f64, String, u32)> {
@@ -144,10 +142,10 @@ impl Node {
     pub fn add_child(&mut self, embeddings: Vec<f64>, url: String, page: u32) {
         if self.node_a.is_none() {
             self.node_a_dist = Node::cosine_sim(&self.embeddings, &embeddings);
-            self.node_a = Some(Node::new(self.depth+1, embeddings, url, page));
+            self.node_a = Some(Node::new(self.depth+1, embeddings, url));
         } else if self.node_b.is_none() {
             self.node_b_dist = Node::cosine_sim(&self.embeddings, &embeddings);
-            self.node_b = Some(Node::new(self.depth+1, embeddings, url, page));
+            self.node_b = Some(Node::new(self.depth+1, embeddings, url));
         } else {
             let mut a_dist = 0.0;
             let mut b_dist = 0.0;
