@@ -38,14 +38,14 @@ if let Ok(mut parent_node) = parent_node.0.lock() {
 ### Searching the Tree
 
 ```rust
-let search_term = "search query".to_string();
+let search_term = get_openai_embeddings("search query".to_string());
 let min_similarity = 0.8; 
 let max_search_results = 5;
-let search_results = root_node.search(min_similarity, max_search_results, search_term, get_openai_embeddings);
+let search_results = root_node.search(min_similarity, max_search_results, search_term);
 // you may add your own search closure if you want to add your own type of embeddings
 ```
 
-### Example Embedding Closure
+### Example Embedding
 
 ```rust
 pub fn get_openai_embeddings(search_term: String) -> Result< Vec<f64>, NodeError> {

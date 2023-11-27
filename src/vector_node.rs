@@ -200,17 +200,12 @@ impl Node {
     pub fn search(&self, 
                    threashold: f64, 
                    search_size: usize, 
-                   search_term: String, 
-                   search_func: fn(String) -> Result< Vec<f64>, NodeError>
+                   search_term: &Vec<f64>,
                    ) -> Vec<(f64, String, u32)> 
     {
         let mut search_results: Vec<(f64, String, u32)> = Vec::new();
-        let search_term = search_func(search_term);
         let mut tally = 0;
-
-        if let Ok(search_term) = search_term {
-            search_results = self.traverse(&mut tally, &search_term, search_results, (search_size,threashold));
-        }
+        search_results = self.traverse(&mut tally, search_term, search_results, (search_size,threashold));
 
         search_results
     }
