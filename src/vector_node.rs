@@ -139,6 +139,30 @@ impl Node {
         search_results
     }
 
+    pub fn overwrite_node(&mut self, embeddings: &Vec<f64>, url: &String, max_delta: f64) {
+        if self.embeddings.len()==0 {
+            self.embeddings = embeddings.clone();
+            self.url = url.clone();
+        } else {
+            let dist = Node::cosine_sim(&self.embeddings, &embeddings);
+            if dist < max_delta {
+                self.url = url.clone();
+            } else {
+                if let Some(node_a) = &self.node_a {
+                    if let Ok(mut node_a) = node_a.0.lock() {
+                        node_a.overwrite_node(&embeddings, url, max_delta);
+                    };
+                }
+                if let Some(node_b) = &self.node_b {
+                    if let Ok(mut node_b) = node_b.0.lock() {
+                        node_b.overwrite_node(&embeddings, url, max_delta);
+                    };
+                }
+            }
+        }
+
+    }
+
     pub fn add_child(&mut self, embeddings: Vec<f64>, url: String) {
         if self.embeddings.len()==0 {
             self.embeddings = embeddings;
