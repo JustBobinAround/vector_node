@@ -225,8 +225,8 @@ impl Node {
         }
     }
 
-    pub fn load_model(file_name: String) -> Result<Node, NodeError> {
-        match std::fs::read_to_string("./search_model.json") {
+    pub fn load_model(file_name: &String) -> Result<Node, NodeError> {
+        match std::fs::read_to_string(file_name) {
             Ok(parent_node) => {
                 match serde_json::from_str(&parent_node) {
                     Ok(parent_node) => { Ok(parent_node) },
